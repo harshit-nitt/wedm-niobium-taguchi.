@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEDM of Pure Niobium | Taguchi L9 Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#18222D; --muted:#5B6875;
+  --rule:#D5DBE1; --rule-soft:#E8ECEF;
+  --nb:#2F4F9E; --nb-2:#9FB2DD; --nb-soft:#E5EBF6;
+  --gold:#B7830F; --gold-soft:#FBF2DC;
+  --grey:#A3ADB7;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth; scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important}}
+body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 var(--sans); -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif); font-weight:600; line-height:1.2; margin:0}
+p{margin:0 0 1em}
+a{color:var(--nb)}
+:focus-visible{outline:2px solid var(--nb); outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.container{max-width:1120px; margin:0 auto; padding:0 24px}
+
+/* Top bar */
+.top{background:var(--surface); border-bottom:1px solid var(--rule)}
+.top .container{display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px}
+.brand{font-weight:600; font-size:15px}
+.brand small{font-weight:400; color:var(--muted); margin-left:8px}
+.btn{font:500 14px/1 var(--sans); color:var(--ink); background:var(--surface); border:1px solid var(--rule); border-radius:5px; padding:9px 14px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--nb); border-color:var(--nb); color:#fff}
+.btn.primary:hover{background:#26437f}
+
+/* Hero */
+.hero{padding:48px 0 40px}
+.hero .container{display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:start}
+.hero h1{font-size:clamp(30px,4vw,44px); letter-spacing:-.01em; max-width:17ch; margin-bottom:16px}
+.lede{color:var(--muted); font-size:17px; max-width:56ch}
+.findings{list-style:none; margin:28px 0 0; padding:0; border-top:1px solid var(--rule)}
+.findings li{padding:14px 0; border-bottom:1px solid var(--rule); display:grid; grid-template-columns:150px 1fr; gap:16px}
+.findings .k{color:var(--muted); font-size:14px; padding-top:1px}
+.findings .v{font-weight:500}
+
+/* Predictor */
+.predictor{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:24px}
+.predictor h2{font-size:20px; margin-bottom:4px}
+.predictor .sub{color:var(--muted); font-size:14px; margin-bottom:20px}
+.field{margin-bottom:14px}
+.field-head{display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px}
+.field-head span{color:var(--muted)}
+.seg{display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--rule); border-radius:6px; overflow:hidden}
+.seg input{position:absolute; opacity:0; pointer-events:none}
+.seg label{position:relative; padding:9px 4px; text-align:center; cursor:pointer; font-variant-numeric:tabular-nums; font-size:15px; transition:background .15s}
+.seg label + input + label{border-left:1px solid var(--rule)}
+.seg label:hover{background:var(--nb-soft)}
+.seg input:checked + label{background:var(--nb); color:#fff}
+.seg input:focus-visible + label{box-shadow:inset 0 0 0 3px var(--gold)}
+.seg label.opt::after{content:""; position:absolute; top:6px; right:7px; width:6px; height:6px; border-radius:50%; background:var(--gold)}
+.readout{margin-top:22px; padding-top:20px; border-top:1px solid var(--rule-soft); display:grid; grid-template-columns:auto 1fr; gap:6px 24px; align-items:end}
+.readout .big{font-family:var(--serif); font-size:52px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums}
+.readout .big small{font-family:var(--sans); font-size:16px; font-weight:400; color:var(--muted); margin-left:4px}
+.readout .lbl{font-size:14px; color:var(--muted)}
+.readout .sn{font-size:15px; text-align:right}
+.scale{position:relative; height:52px; margin:22px 0 8px}
+.scale .track{position:absolute; left:0; right:0; top:18px; height:4px; border-radius:2px; background:linear-gradient(90deg,var(--nb-soft),var(--rule))}
+.scale .tick{position:absolute; top:12px; width:2px; height:16px; background:var(--grey); transform:translateX(-1px)}
+.scale .tick.best{background:var(--gold)}
+.scale .marker{position:absolute; top:4px; width:14px; height:14px; border-radius:50%; background:var(--nb); border:3px solid #fff; box-shadow:0 0 0 1px var(--nb); transform:translateX(-7px); transition:left .25s ease}
+.scale .ends{position:absolute; top:30px; left:0; right:0; display:flex; justify-content:space-between; font-size:12px; color:var(--muted)}
+.status{font-size:14px; color:var(--muted); min-height:42px}
+.status strong{color:var(--ink); font-weight:500}
+.pred-actions{display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:13px; color:var(--muted)}
+.dot-key::before{content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--gold); margin-right:6px; vertical-align:middle}
+.linkbtn{background:none; border:0; padding:0; font:500 14px var(--sans); color:var(--nb); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+
+/* Section nav */
+.secnav{position:sticky; top:0; z-index:10; background:rgba(242,244,246,.94); backdrop-filter:blur(6px); border-top:1px solid var(--rule); border-bottom:1px solid var(--rule)}
+.secnav ol{list-style:none; margin:0; padding:0; display:flex; gap:4px; overflow-x:auto}
+.secnav a{display:block; padding:14px 12px; white-space:nowrap; text-decoration:none; color:var(--muted); font-size:14px; border-bottom:2px solid transparent; margin-bottom:-1px}
+.secnav a span{font-variant-numeric:tabular-nums; margin-right:6px; color:var(--grey)}
+.secnav a:hover{color:var(--ink)}
+.secnav a.active{color:var(--ink); border-bottom-color:var(--nb)}
+
+/* Sections */
+section.block{padding:56px 0 8px}
+.block-head{display:grid; grid-template-columns:48px 1fr; gap:0 8px; margin-bottom:24px}
+.block-head .n{font-family:var(--serif); font-size:28px; color:var(--nb-2); line-height:1.1}
+.block-head h2{font-size:28px; margin-bottom:8px}
+.block-head p{color:var(--muted); max-width:70ch; margin:0}
+.panel{background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:20px 22px; margin-bottom:20px}
+.panel h3{font-size:18px; margin-bottom:4px}
+.panel .cap{color:var(--muted); font-size:14px; margin-bottom:14px}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+.grid-2 > .panel{margin-bottom:0}
+.grid-2 > *, .hero .container > *, .effects > *{min-width:0}
+.stack{margin-bottom:20px}
+
+/* Tables */
+.table-wrap{overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:15px; font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px; border-bottom:1px solid var(--rule-soft); text-align:right; white-space:nowrap}
+th{font-weight:500; color:var(--muted); font-size:13px; border-bottom:1px solid var(--rule)}
+th:first-child,td:first-child{text-align:left; padding-left:0}
+td.l,th.l{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+tr.best td{background:var(--gold-soft)}
+tr.total td{font-weight:500; border-top:1px solid var(--rule)}
+td.muted{color:var(--muted)}
+.lv{display:inline-block; min-width:22px; padding:1px 6px; border-radius:3px; text-align:center; font-size:13px; font-weight:500}
+.lv1{background:var(--nb-soft); color:var(--nb)}
+.lv2{background:var(--nb-2); color:#172a57}
+.lv3{background:var(--nb); color:#fff}
+tr td.optcell{color:var(--gold); font-weight:600}
+.tag{display:inline-block; font-size:12px; padding:1px 7px; border-radius:3px; background:var(--gold-soft); color:#7a5708; margin-left:6px; font-weight:500}
+
+/* Toolbar */
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px}
+.toolbar .spacer{flex:1}
+@media (max-width:560px){.toolbar .spacer{flex-basis:100%; height:0}}
+.src{font-size:14px; color:var(--muted)}
+.alert{display:none; margin:0 0 16px; padding:10px 14px; border-radius:6px; font-size:14px; border:1px solid}
+.alert.show{display:block}
+.alert.err{background:#FCEDEC; border-color:#E9B8B3; color:#7A2A22}
+.alert.ok{background:#EAF3EC; border-color:#B9D8C0; color:#24522F}
+
+/* Charts */
+svg{display:block; width:100%; height:auto}
+svg text{font-family:var(--sans); fill:var(--muted); font-size:12px}
+.effects svg text{font-size:13px}
+.effects{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.effects h4{font:500 14px var(--sans); margin:0 0 2px; text-align:center}
+.toggle{display:inline-flex; border:1px solid var(--rule); border-radius:6px; overflow:hidden}
+.toggle button{font:500 13px var(--sans); background:var(--surface); color:var(--muted); border:0; padding:7px 12px; cursor:pointer}
+.toggle button + button{border-left:1px solid var(--rule)}
+.toggle button[aria-pressed="true"]{background:var(--ink); color:#fff}
+.legend{display:flex; gap:18px; font-size:13px; color:var(--muted); margin-top:8px; flex-wrap:wrap}
+.legend i{display:inline-block; vertical-align:middle; margin-right:6px}
+
+/* Contribution bars */
+.bars{display:grid; gap:14px; margin-top:6px}
+.bar-row{display:grid; grid-template-columns:150px 1fr 62px; gap:12px; align-items:center; font-size:14px}
+.bar-track{height:22px; background:var(--rule-soft); border-radius:3px; overflow:hidden}
+.bar-fill{height:100%; background:var(--nb); border-radius:3px 0 0 3px}
+.bar-fill.err{background:var(--grey)}
+.bar-row .pct{text-align:right; font-variant-numeric:tabular-nums; font-weight:500}
+
+/* Prose lists */
+.points{margin:12px 0 0; padding-left:20px}
+.points li{margin-bottom:10px; max-width:72ch}
+.note{font-size:14px; color:var(--muted); border-left:3px solid var(--rule); padding:2px 0 2px 14px; margin:0}
+
+footer{margin-top:56px; border-top:1px solid var(--rule); background:var(--surface); padding:28px 0; font-size:14px; color:var(--muted)}
+footer .container{display:flex; flex-wrap:wrap; gap:12px 40px; justify-content:space-between}
+footer ul{margin:6px 0 0; padding-left:18px}
+
+@media (max-width:900px){
+  .hero .container{grid-template-columns:1fr; gap:32px}
+  .grid-2{grid-template-columns:1fr}
+  .effects{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .container{padding:0 16px}
+  .findings li{grid-template-columns:1fr; gap:2px}
+  .block-head{grid-template-columns:1fr}
+  .block-head .n{font-size:18px}
+  .bar-row{grid-template-columns:100px 1fr 54px}
+  .readout .big{font-size:42px}
+  .brand small{display:none}
+}
+@media print{
+  body{background:#fff}
+  .secnav,.top .btn,.toolbar,.pred-actions,.toggle{display:none!important}
+  .panel,.predictor{break-inside:avoid; border-color:#bbb}
+  section.block{padding-top:24px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="container">
+    <div class="brand">Niobium WEDM study<small>ISRO LPSC research internship, 2026</small></div>
+    <button class="btn" type="button" onclick="window.print()">Print report</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <h1>Which Wire-EDM settings give pure niobium the smoothest surface?</h1>
+      <p class="lede">A Taguchi L9 analysis of how pulse-on time, pulse-off time and peak current affect surface roughness (Ra), across nine trials with three readings each. Developed during a research internship at the Liquid Propulsion Systems Centre, Thiruvananthapuram, May to July 2026.</p>
+      <ul class="findings" id="findings"></ul>
+    </div>
+
+    <div class="predictor" aria-labelledby="pred-title">
+      <h2 id="pred-title">Try a parameter setting</h2>
+      <p class="sub">Predicted Ra from the additive Taguchi model built on the nine runs.</p>
+      <div id="pred-fields"></div>
+      <div class="readout">
+        <div>
+          <div class="lbl">Predicted mean Ra</div>
+          <div class="big" id="pred-ra" aria-live="polite">–</div>
+        </div>
+        <div class="sn"><div class="lbl">Predicted S/N ratio</div><span class="num" id="pred-sn">–</span></div>
+      </div>
+      <div class="scale" id="pred-scale" aria-hidden="true"></div>
+      <p class="status" id="pred-status"></p>
+      <div class="pred-actions">
+        <span class="dot-key">Level with the highest S/N ratio</span>
+        <button type="button" class="linkbtn" id="pred-reset">Use optimum setting</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<nav class="secnav" aria-label="Sections">
+  <div class="container">
+    <ol>
+      <li><a href="#design"><span>1</span>Experiment design</a></li>
+      <li><a href="#data"><span>2</span>Dataset</a></li>
+      <li><a href="#sn"><span>3</span>S/N analysis</a></li>
+      <li><a href="#anova"><span>4</span>ANOVA</a></li>
+      <li><a href="#optimum"><span>5</span>Optimum and conclusions</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main class="container">
+
+  <section class="block" id="design">
+    <div class="block-head">
+      <div class="n">1</div>
+      <div>
+        <h2>Experiment design</h2>
+        <p>Three factors at three levels would need 27 trials as a full factorial. The L9 orthogonal array covers the main effects in 9, with every level of every factor appearing exactly three times.</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Factors and levels</h3>
+        <p class="cap">Levels coded 1 to 3 in the array.</p>
+        <div class="table-wrap"><table id="tbl-factors"></table></div>
+      </div>
+      <div class="panel">
+        <h3>L9 orthogonal array</h3>
+        <p class="cap">Coded levels with the actual settings used in each run.</p>
+        <div class="table-wrap"><table id="tbl-l9"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="data">
+    <div class="block-head">
+      <div class="n">2</div>
+      <div>
+        <h2>Dataset</h2>
+        <p>Three Ra readings per run. The mean feeds the ANOVA; the spread between readings feeds the signal-to-noise ratio.</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <label class="btn primary" for="file-in">Upload CSV</label>
+      <input type="file" id="file-in" accept=".csv,text/csv" hidden>
+      <button class="btn" type="button" id="btn-reset-data" hidden>Restore representative data</button>
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-dl="raw">Download raw data</button>
+      <button class="btn" type="button" data-dl="runs">Download run summary</button>
+    </div>
+    <p class="src" id="data-src"></p>
+    <div class="alert" id="data-alert" role="alert"></div>
+
+    <div class="panel">
+      <h3>Ra readings by run</h3>
+      <p class="cap">Dots are individual readings, the bar is the run mean. The lowest-roughness run is highlighted.</p>
+      <div class="table-wrap"><div id="chart-runs" style="min-width:560px"></div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Run summary</h3>
+      <p class="cap">Smaller-the-better S/N = −10 log₁₀(mean of Ra²). Higher S/N means lower and more consistent roughness.</p>
+      <div class="table-wrap"><table id="tbl-runs"></table></div>
+    </div>
+  </section>
+
+  <section class="block" id="sn">
+    <div class="block-head">
+      <div class="n">3</div>
+      <div>
+        <h2>S/N analysis</h2>
+        <p>Averaging each factor's S/N ratio at each level isolates its effect. The level with the highest average S/N is the best choice, and the spread across levels (delta) ranks how much each factor matters.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar" style="margin-bottom:6px">
+        <div>
+          <h3 id="effects-title">Main effects plot for S/N ratios</h3>
+        </div>
+        <span class="spacer"></span>
+        <div class="toggle" role="group" aria-label="Plot metric">
+          <button type="button" data-metric="sn" aria-pressed="true">S/N ratio</button>
+          <button type="button" data-metric="mean" aria-pressed="false">Mean Ra</button>
+        </div>
+      </div>
+      <p class="cap" id="effects-cap"></p>
+      <div class="effects" id="chart-effects"></div>
+      <div class="legend">
+        <span><i style="width:9px;height:9px;border-radius:50%;background:var(--gold)"></i>Best level</span>
+        <span><i style="width:18px;border-top:1px dashed var(--grey)"></i>Grand mean</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Response table</h3>
+      <p class="cap">Mean S/N ratio (dB) and mean Ra (µm) at each level.</p>
+      <div class="table-wrap"><table id="tbl-response"></table></div>
+    </div>
+  </section>
+
+  <section class="block" id="anova">
+    <div class="block-head">
+      <div class="n">4</div>
+      <div>
+        <h2>Analysis of variance</h2>
+        <p>ANOVA on the nine run means splits the total variation in Ra between the three factors and error, giving each factor's share and an F-test of significance.</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>ANOVA table</h3>
+        <p class="cap" id="anova-cap"></p>
+        <div class="table-wrap"><table id="tbl-anova"></table></div>
+      </div>
+      <div class="panel">
+        <h3>Contribution to variation in Ra</h3>
+        <p class="cap">Sum of squares as a share of the total.</p>
+        <div class="bars" id="chart-contrib"></div>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-top:14px">
+      <button class="btn" type="button" data-dl="anova">Download ANOVA table</button>
+    </div>
+  </section>
+
+  <section class="block" id="optimum">
+    <div class="block-head">
+      <div class="n">5</div>
+      <div>
+        <h2>Optimum and conclusions</h2>
+        <p>The optimum combines the best level of each factor. Because it may not be one of the nine runs, its roughness is predicted from the additive model.</p>
+      </div>
+    </div>
+    <div class="grid-2 stack">
+      <div class="panel">
+        <h3>Optimal setting</h3>
+        <p class="cap">Level with the highest mean S/N ratio for each factor.</p>
+        <div class="table-wrap"><table id="tbl-opt"></table></div>
+      </div>
+      <div class="panel">
+        <h3>Predicted against observed</h3>
+        <p class="cap">Model prediction at the optimum compared with the best tested run.</p>
+        <div class="table-wrap"><table id="tbl-compare"></table></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Conclusions</h3>
+      <ul class="points" id="conclusions"></ul>
+    </div>
+    <div class="panel">
+      <h3>Limitations and data source</h3>
+      <ul class="points" id="limits"></ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div>
+      <strong style="color:var(--ink);font-weight:500">Methods</strong>
+      <ul>
+        <li>Taguchi L9 design of experiments</li>
+        <li>Smaller-the-better signal-to-noise ratio</li>
+        <li>ANOVA on run means, α = 0.05</li>
+      </ul>
+    </div>
+    <div>
+      <strong style="color:var(--ink);font-weight:500">Project files</strong>
+      <ul>
+        <li>wedm_niobium_raw_data.csv</li>
+        <li>taguchi_analysis.py</li>
+        <li>WEDM_Niobium_Taguchi_Analysis.xlsx</li>
+        <li>WEDM_Niobium_Technical_Report.docx</li>
+      </ul>
+    </div>
+    <div style="max-width:300px">All figures on this page are computed in the browser from the loaded CSV, so uploading new readings updates every table and chart.</div>
+  </div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * Configuration
+ * ------------------------------------------------------------------ */
+const FACTORS = [
+  { key: "Pulse_on_time_us",  name: "Pulse-on time",  sym: "Ton",  unit: "µs" },
+  { key: "Pulse_off_time_us", name: "Pulse-off time", sym: "Toff", unit: "µs" },
+  { key: "Peak_current_A",    name: "Peak current",   sym: "Ip",   unit: "A"  },
+];
+const RESP = "Surface_Roughness_Ra_um";
+const F_CRIT_2_2 = 19.0; // F(0.05; 2, 2)
+const BUNDLED_CSV = `Run,Replicate,Pulse_on_time_us,Pulse_off_time_us,Peak_current_A,Surface_Roughness_Ra_um
+1,1,108,34,3,2.885
+1,2,108,34,3,2.847
+1,3,108,34,3,2.894
+2,1,108,38,5,3.232
+2,2,108,38,5,3.127
+2,3,108,38,5,3.127
+3,1,108,42,7,3.522
+3,2,108,42,7,3.473
+3,3,108,42,7,3.399
+4,1,112,34,5,3.37
+4,2,112,34,5,3.309
+4,3,112,34,5,3.309
+5,1,112,38,7,3.638
+5,2,112,38,7,3.508
+5,3,112,38,7,3.52
+6,1,112,42,3,2.765
+6,2,112,42,3,2.738
+6,3,112,42,3,2.818
+7,1,116,34,7,3.765
+7,2,116,34,7,3.734
+7,3,116,34,7,3.907
+8,1,116,38,3,2.981
+8,2,116,38,3,2.999
+8,3,116,38,3,2.91
+9,1,116,42,5,3.248
+9,2,116,42,5,3.288
+9,3,116,42,5,3.212`;
+const BUNDLED_NOTE = "Analysis shown on a representative dataset of 27 Ra readings, modelled on typical WEDM parameter ranges for niobium. Upload measured readings to replace it.";
+
+let A = null;            // current analysis
+let sel = {};            // predictor selection {key: value}
+let metric = "sn";       // main effects metric
+let sourceNote = BUNDLED_NOTE;
+
+/* ------------------------------------------------------------------ *
+ * Helpers
+ * ------------------------------------------------------------------ */
+const $ = id => document.getElementById(id);
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+const fx = (v, d = 3) => (v == null || !isFinite(v)) ? "–" : Number(v).toFixed(d);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const withUnit = (f, v) => `${v} ${f.unit}`;
+
+function niceTicks(min, max, count = 5) {
+  if (min === max) { min -= 0.5; max += 0.5; }
+  const raw = (max - min) / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / mag;
+  const step = (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = lo; v <= hi + step / 2; v += step) ticks.push(+v.toFixed(10));
+  return { lo, hi, ticks, dec: Math.max(0, -Math.floor(Math.log10(step))) };
+}
+
+/* ------------------------------------------------------------------ *
+ * Parsing and analysis
+ * ------------------------------------------------------------------ */
+function parseCSV(text) {
+  const lines = text.replace(/\r/g, "").split("\n").map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) throw new Error("the file has no data rows.");
+  const head = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+  const need = ["Run", ...FACTORS.map(f => f.key), RESP];
+  const missing = need.filter(n => !head.includes(n));
+  if (missing.length) throw new Error(`missing column${missing.length > 1 ? "s" : ""} ${missing.join(", ")}.`);
+  const idx = Object.fromEntries(need.map(n => [n, head.indexOf(n)]));
+  return lines.slice(1).map((line, i) => {
+    const cells = line.split(",");
+    const row = {};
+    for (const n of need) {
+      const v = Number(cells[idx[n]]);
+      if (!isFinite(v)) throw new Error(`row ${i + 2} has a non-numeric value in ${n}.`);
+      row[n] = v;
+    }
+    if (row[RESP] <= 0) throw new Error(`row ${i + 2} has Ra ≤ 0; roughness must be positive.`);
+    row.Replicate = i;
+    return row;
+  });
+}
+
+function analyse(rows) {
+  // Group readings into runs
+  const byRun = new Map();
+  for (const r of rows) {
+    if (!byRun.has(r.Run)) byRun.set(r.Run, { run: r.Run, f: {}, reps: [] });
+    const g = byRun.get(r.Run);
+    for (const f of FACTORS) {
+      if (g.f[f.key] === undefined) g.f[f.key] = r[f.key];
+      else if (g.f[f.key] !== r[f.key]) throw new Error(`run ${r.Run} has inconsistent ${f.key} values.`);
+    }
+    g.reps.push(r[RESP]);
+  }
+  const runs = [...byRun.values()].sort((a, b) => a.run - b.run);
+  if (runs.length !== 9) throw new Error(`found ${runs.length} runs; an L9 design needs 9.`);
+
+  const levels = {};
+  for (const f of FACTORS) {
+    const vals = [...new Set(runs.map(r => r.f[f.key]))].sort((a, b) => a - b);
+    if (vals.length !== 3) throw new Error(`${f.key} has ${vals.length} levels; an L9 design needs 3.`);
+    for (const v of vals) {
+      if (runs.filter(r => r.f[f.key] === v).length !== 3)
+        throw new Error(`${f.key} = ${v} does not appear in exactly 3 runs, so the array is not orthogonal.`);
+    }
+    levels[f.key] = vals;
+  }
+
+  for (const r of runs) {
+    r.mean = mean(r.reps);
+    r.sd = r.reps.length > 1 ? Math.sqrt(r.reps.reduce((s, v) => s + (v - r.mean) ** 2, 0) / (r.reps.length - 1)) : null;
+    r.sn = -10 * Math.log10(mean(r.reps.map(v => v * v)));
+  }
+
+  const gm = mean(runs.map(r => r.mean));
+  const gsn = mean(runs.map(r => r.sn));
+
+  const resp = {}, delta = {}, opt = {};
+  for (const f of FACTORS) {
+    resp[f.key] = levels[f.key].map((v, i) => {
+      const sub = runs.filter(r => r.f[f.key] === v);
+      return { v, code: i + 1, sn: mean(sub.map(r => r.sn)), mean: mean(sub.map(r => r.mean)) };
+    });
+    const sns = resp[f.key].map(l => l.sn);
+    delta[f.key] = Math.max(...sns) - Math.min(...sns);
+    opt[f.key] = resp[f.key].reduce((b, l) => (l.sn > b.sn ? l : b));
+  }
+  const rank = {};
+  [...FACTORS].sort((a, b) => delta[b.key] - delta[a.key]).forEach((f, i) => (rank[f.key] = i + 1));
+
+  // ANOVA on run means
+  const ssT = runs.reduce((s, r) => s + (r.mean - gm) ** 2, 0);
+  const anova = FACTORS.map(f => {
+    const ss = 3 * resp[f.key].reduce((s, l) => s + (l.mean - gm) ** 2, 0);
+    return { f, dof: 2, ss };
+  });
+  const ssE = Math.max(ssT - anova.reduce((s, a) => s + a.ss, 0), 0);
+  const msE = ssE / 2;
+  for (const a of anova) {
+    a.ms = a.ss / a.dof;
+    a.F = msE > 0 ? a.ms / msE : null;
+    a.pct = 100 * a.ss / ssT;
+    a.sig = a.F != null && a.F > F_CRIT_2_2;
+  }
+  const err = { dof: 2, ss: ssE, ms: msE, pct: 100 * ssE / ssT };
+
+  const predict = s => {
+    let ra = gm, sn = gsn;
+    for (const f of FACTORS) {
+      const l = resp[f.key].find(x => x.v === s[f.key]);
+      ra += l.mean - gm; sn += l.sn - gsn;
+    }
+    return { ra, sn };
+  };
+
+  const optSel = Object.fromEntries(FACTORS.map(f => [f.key, opt[f.key].v]));
+  const optPred = predict(optSel);
+  const best = runs.reduce((b, r) => (r.mean < b.mean ? r : b));
+
+  // Range of predictions over all 27 combinations
+  const preds = [];
+  for (const a of levels[FACTORS[0].key]) for (const b of levels[FACTORS[1].key]) for (const c of levels[FACTORS[2].key])
+    preds.push(predict({ [FACTORS[0].key]: a, [FACTORS[1].key]: b, [FACTORS[2].key]: c }).ra);
+
+  return { rows, runs, levels, gm, gsn, resp, delta, rank, opt, optSel, optPred, anova, err, ssT, best, predict,
+           predMin: Math.min(...preds), predMax: Math.max(...preds) };
+}
+
+const findRun = s => A.runs.find(r => FACTORS.every(f => r.f[f.key] === s[f.key]));
+
+/* ------------------------------------------------------------------ *
+ * Rendering: hero and predictor
+ * ------------------------------------------------------------------ */
+function renderFindings() {
+  const top = [...A.anova].sort((a, b) => b.pct - a.pct)[0];
+  const optText = FACTORS.map(f => `${f.sym} ${withUnit(f, A.optSel[f.key])}`).join(", ");
+  $("findings").innerHTML = `
+    <li><span class="k">Dominant factor</span><span class="v">${top.f.name} explains ${fx(top.pct, 2)}% of the variation in Ra</span></li>
+    <li><span class="k">Optimal setting</span><span class="v">${optText}, predicted Ra ${fx(A.optPred.ra)} µm</span></li>
+    <li><span class="k">Best tested run</span><span class="v">Run ${A.best.run}, mean Ra ${fx(A.best.mean)} µm</span></li>`;
+}
+
+function renderPredictorFields() {
+  $("pred-fields").innerHTML = FACTORS.map(f => `
+    <div class="field" role="radiogroup" aria-label="${f.name}">
+      <div class="field-head">${f.name} <span>${f.sym}, ${f.unit}</span></div>
+      <div class="seg">${A.levels[f.key].map((v, i) => {
+        const id = `p-${f.sym}-${i}`;
+        const isOpt = A.opt[f.key].v === v;
+        return `<input type="radio" name="p-${f.sym}" id="${id}" value="${v}" data-key="${f.key}" ${sel[f.key] === v ? "checked" : ""}>
+                <label for="${id}" class="${isOpt ? "opt" : ""}"${isOpt ? ' title="Highest S/N level"' : ""}>${v}</label>`;
+      }).join("")}</div>
+    </div>`).join("");
+  $("pred-fields").querySelectorAll("input").forEach(inp =>
+    inp.addEventListener("change", e => { sel[e.target.dataset.key] = Number(e.target.value); renderPrediction(); }));
+}
+
+function renderPrediction() {
+  const p = A.predict(sel);
+  $("pred-ra").innerHTML = `${fx(p.ra)}<small>µm</small>`;
+  $("pred-sn").textContent = `${fx(p.sn, 2)} dB`;
+
+  const obs = A.runs.map(r => r.mean);
+  const lo = Math.min(A.predMin, ...obs), hi = Math.max(A.predMax, ...obs);
+  const pad = (hi - lo) * 0.04;
+  const pos = v => `${(100 * (v - lo + pad) / (hi - lo + 2 * pad)).toFixed(2)}%`;
+  $("pred-scale").innerHTML = `
+    <div class="track"></div>
+    ${A.runs.map(r => `<div class="tick${r === A.best ? " best" : ""}" style="left:${pos(r.mean)}"></div>`).join("")}
+    <div class="marker" style="left:${pos(p.ra)}"></div>
+    <div class="ends"><span>${fx(lo, 2)} µm smoother</span><span>rougher ${fx(hi, 2)} µm</span></div>`;
+
+  const run = findRun(sel);
+  const isOpt = FACTORS.every(f => sel[f.key] === A.optSel[f.key]);
+  const head = isOpt ? "<strong>Optimal setting.</strong> " : "";
+  const body = run
+    ? `Tested as Run ${run.run}, with an observed mean of ${fx(run.mean)} µm (model ${p.ra >= run.mean ? "+" : "−"}${fx(Math.abs(p.ra - run.mean))} µm).`
+    : `Not one of the nine tested runs, so this value needs a confirmation trial.`;
+  $("pred-status").innerHTML = head + body + ` Ticks on the scale mark the nine run means.`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section 1: design
+ * ------------------------------------------------------------------ */
+function renderDesign() {
+  $("tbl-factors").innerHTML = `
+    <thead><tr><th>Factor</th><th class="l">Symbol</th><th>Level 1</th><th>Level 2</th><th>Level 3</th><th class="l">Unit</th></tr></thead>
+    <tbody>${FACTORS.map(f => `<tr><td>${f.name}</td><td class="l">${f.sym}</td>
+      ${A.levels[f.key].map(v => `<td>${v}</td>`).join("")}<td class="l">${f.unit}</td></tr>`).join("")}</tbody>`;
+
+  $("tbl-l9").innerHTML = `
+    <thead><tr><th>Run</th>${FACTORS.map(f => `<th class="l">${f.sym} (${f.unit})</th>`).join("")}</tr></thead>
+    <tbody>${A.runs.map(r => `<tr><td>${r.run}</td>${FACTORS.map(f => {
+      const c = A.levels[f.key].indexOf(r.f[f.key]) + 1;
+      return `<td class="l"><span class="lv lv${c}">${c}</span> &nbsp;${r.f[f.key]}</td>`;
+    }).join("")}</tr>`).join("")}</tbody>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section 2: measurements
+ * ------------------------------------------------------------------ */
+function renderData() {
+  $("data-src").textContent = sourceNote;
+  const maxReps = Math.max(...A.runs.map(r => r.reps.length));
+
+  $("tbl-runs").innerHTML = `
+    <thead><tr><th>Run</th>${FACTORS.map(f => `<th>${f.sym} (${f.unit})</th>`).join("")}
+      ${Array.from({ length: maxReps }, (_, i) => `<th>Ra ${i + 1}</th>`).join("")}
+      <th>Mean Ra (µm)</th><th>SD</th><th>S/N (dB)</th></tr></thead>
+    <tbody>${A.runs.map(r => `<tr class="${r === A.best ? "best" : ""}">
+      <td>${r.run}${r === A.best ? '<span class="tag">Lowest Ra</span>' : ""}</td>
+      ${FACTORS.map(f => `<td>${r.f[f.key]}</td>`).join("")}
+      ${Array.from({ length: maxReps }, (_, i) => `<td class="muted">${r.reps[i] != null ? fx(r.reps[i]) : ""}</td>`).join("")}
+      <td><strong style="font-weight:500">${fx(r.mean)}</strong></td><td class="muted">${fx(r.sd)}</td><td>${fx(r.sn, 3)}</td></tr>`).join("")}
+    </tbody>`;
+
+  // Dot plot of readings
+  const W = 760, H = 270, m = { l: 50, r: 12, t: 14, b: 42 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const all = A.runs.flatMap(r => r.reps);
+  const t = niceTicks(Math.min(...all), Math.max(...all), 5);
+  const y = v => m.t + ih * (1 - (v - t.lo) / (t.hi - t.lo));
+  const bw = iw / A.runs.length;
+  const cx = i => m.l + bw * (i + 0.5);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Surface roughness readings for each of the nine runs">`;
+  for (const v of t.ticks) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule-soft)"/>
+      <text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(t.dec)}</text>`;
+  s += `<text transform="translate(13 ${m.t + ih / 2}) rotate(-90)" text-anchor="middle">Ra (µm)</text>`;
+  s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(A.gm)}" y2="${y(A.gm)}" stroke="var(--grey)" stroke-dasharray="4 4"/>`;
+  A.runs.forEach((r, i) => {
+    const best = r === A.best, col = best ? "var(--gold)" : "var(--nb)";
+    if (best) s += `<rect x="${cx(i) - bw / 2 + 4}" y="${m.t}" width="${bw - 8}" height="${ih}" fill="var(--gold-soft)" rx="3"/>`;
+    s += `<g><title>Run ${r.run}: ${FACTORS.map(f => `${f.sym} ${r.f[f.key]} ${f.unit}`).join(", ")}; mean Ra ${fx(r.mean)} µm</title>`;
+    s += `<line x1="${cx(i) - 16}" x2="${cx(i) + 16}" y1="${y(r.mean)}" y2="${y(r.mean)}" stroke="${best ? "var(--gold)" : "var(--ink)"}" stroke-width="3" stroke-linecap="round"/>`;
+    r.reps.forEach((v, j) => {
+      const off = (j - (r.reps.length - 1) / 2) * 9;
+      s += `<circle cx="${cx(i) + off}" cy="${y(v)}" r="4.5" fill="${col}" fill-opacity=".55" stroke="${col}"/>`;
+    });
+    s += `<text x="${cx(i)}" y="${H - m.b + 20}" text-anchor="middle" style="fill:var(--ink)">Run ${r.run}</text></g>`;
+  });
+  s += `</svg>`;
+  $("chart-runs").innerHTML = s;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section 3: S/N analysis
+ * ------------------------------------------------------------------ */
+function renderEffects() {
+  const isSN = metric === "sn";
+  $("effects-title").textContent = isSN ? "Main effects plot for S/N ratios" : "Main effects plot for mean Ra";
+  $("effects-cap").textContent = isSN
+    ? "Mean S/N ratio in dB; higher is better. All three panels share one scale, so a steeper line means a stronger effect."
+    : "Mean Ra in µm; lower is better. All three panels share one scale, so a steeper line means a stronger effect.";
+  document.querySelectorAll(".toggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.metric === metric)));
+
+  const vals = FACTORS.flatMap(f => A.resp[f.key].map(l => l[metric]));
+  const t = niceTicks(Math.min(...vals), Math.max(...vals), 5);
+  const ref = isSN ? A.gsn : A.gm;
+
+  $("chart-effects").innerHTML = FACTORS.map(f => {
+    const W = 320, H = 240, m = { l: 50, r: 14, t: 12, b: 40 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const x = i => m.l + iw * (0.12 + 0.76 * i / 2);
+    const y = v => m.t + ih * (1 - (v - t.lo) / (t.hi - t.lo));
+    const L = A.resp[f.key];
+    const bestL = isSN ? L.reduce((b, l) => (l.sn > b.sn ? l : b)) : L.reduce((b, l) => (l.mean < b.mean ? l : b));
+    let s = `<div><h4>${f.name} (${f.sym}, ${f.unit})</h4><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${f.name} main effect">`;
+    for (const v of t.ticks) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule-soft)"/>
+        <text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(t.dec)}</text>`;
+    s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(ref)}" y2="${y(ref)}" stroke="var(--grey)" stroke-dasharray="4 4"/>`;
+    s += `<polyline fill="none" stroke="var(--nb)" stroke-width="2.5" points="${L.map((l, i) => `${x(i)},${y(l[metric])}`).join(" ")}"/>`;
+    L.forEach((l, i) => {
+      const b = l === bestL;
+      s += `<circle cx="${x(i)}" cy="${y(l[metric])}" r="${b ? 6.5 : 5}" fill="${b ? "var(--gold)" : "var(--nb)"}" stroke="#fff" stroke-width="2"><title>${withUnit(f, l.v)}: ${fx(l[metric], isSN ? 3 : 3)} ${isSN ? "dB" : "µm"}</title></circle>`;
+      s += `<text x="${x(i)}" y="${H - m.b + 22}" text-anchor="middle" style="fill:var(--ink)">${l.v}</text>`;
+    });
+    return s + `</svg></div>`;
+  }).join("");
+}
+
+function renderResponse() {
+  const row = (label, fn, dec) => `<tr><td>${label}</td>${FACTORS.map(f => fn(f, dec)).join("")}</tr>`;
+  const lvlCell = (i, key) => (f, dec) => {
+    const l = A.resp[f.key][i];
+    const isOpt = key === "sn" ? A.opt[f.key] === l : A.resp[f.key].every(o => o.mean >= l.mean);
+    return `<td class="${isOpt ? "optcell" : ""}">${fx(l[key], dec)} <span class="muted" style="color:var(--muted);font-weight:400;font-size:13px">(${l.v})</span></td>`;
+  };
+  $("tbl-response").innerHTML = `
+    <thead><tr><th></th>${FACTORS.map(f => `<th>${f.name} (${f.sym})</th>`).join("")}</tr></thead>
+    <tbody>
+      ${[0, 1, 2].map(i => row(`S/N, level ${i + 1}`, lvlCell(i, "sn"), 3)).join("")}
+      <tr class="total"><td>Delta (dB)</td>${FACTORS.map(f => `<td>${fx(A.delta[f.key], 3)}</td>`).join("")}</tr>
+      <tr><td>Rank</td>${FACTORS.map(f => `<td>${A.rank[f.key]}</td>`).join("")}</tr>
+      ${[0, 1, 2].map(i => row(`Mean Ra, level ${i + 1}`, lvlCell(i, "mean"), 3)).join("").replace("<tr>", '<tr class="total">')}
+    </tbody>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section 4: ANOVA
+ * ------------------------------------------------------------------ */
+function renderANOVA() {
+  $("anova-cap").innerHTML = `Critical F(2, 2) at α = 0.05 is ${F_CRIT_2_2.toFixed(2)}.`;
+  $("tbl-anova").innerHTML = `
+    <thead><tr><th>Source</th><th>DOF</th><th>Sum sq.</th><th>Mean sq.</th><th>F</th><th>Contribution</th></tr></thead>
+    <tbody>
+      ${A.anova.map(a => `<tr><td>${a.f.name} (${a.f.sym})</td><td>${a.dof}</td><td>${fx(a.ss, 5)}</td><td>${fx(a.ms, 5)}</td>
+        <td>${fx(a.F, 2)}${a.sig ? "" : ' <span class="muted" style="color:var(--muted)">ns</span>'}</td><td>${fx(a.pct, 2)}%</td></tr>`).join("")}
+      <tr><td>Error</td><td>${A.err.dof}</td><td>${fx(A.err.ss, 5)}</td><td>${fx(A.err.ms, 5)}</td><td class="muted">–</td><td>${fx(A.err.pct, 2)}%</td></tr>
+      <tr class="total"><td>Total</td><td>8</td><td>${fx(A.ssT, 5)}</td><td class="muted">–</td><td class="muted">–</td><td>100.00%</td></tr>
+    </tbody>`;
+
+  const items = [...A.anova.map(a => ({ label: a.f.name, pct: a.pct, err: false })), { label: "Error", pct: A.err.pct, err: true }];
+  $("chart-contrib").innerHTML = items.map(it => `
+    <div class="bar-row"><span>${it.label}</span>
+      <div class="bar-track" role="img" aria-label="${it.label} ${fx(it.pct, 1)} percent"><div class="bar-fill${it.err ? " err" : ""}" style="width:${Math.max(it.pct, 0.4)}%"></div></div>
+      <span class="pct">${fx(it.pct, 2)}%</span></div>`).join("");
+}
+
+/* ------------------------------------------------------------------ *
+ * Section 5: optimum and conclusions
+ * ------------------------------------------------------------------ */
+function levelWord(f, v) {
+  const L = A.levels[f.key];
+  return v === L[0] ? "lowest" : v === L[2] ? "highest" : "middle";
+}
+
+function renderOptimum() {
+  $("tbl-opt").innerHTML = `
+    <thead><tr><th>Factor</th><th>Level</th><th>Value</th><th>Mean S/N (dB)</th></tr></thead>
+    <tbody>${FACTORS.map(f => { const o = A.opt[f.key];
+      return `<tr><td>${f.name} (${f.sym})</td><td><span class="lv lv${o.code}">${o.code}</span></td><td>${withUnit(f, o.v)}</td><td>${fx(o.sn, 3)}</td></tr>`; }).join("")}</tbody>`;
+
+  const optRun = findRun(A.optSel);
+  $("tbl-compare").innerHTML = `
+    <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Grand mean Ra</td><td>${fx(A.gm)} µm</td></tr>
+      <tr><td>Predicted Ra at optimum</td><td><strong style="font-weight:600">${fx(A.optPred.ra)} µm</strong></td></tr>
+      <tr><td>Predicted S/N at optimum</td><td>${fx(A.optPred.sn, 2)} dB</td></tr>
+      <tr><td>Best tested run</td><td>Run ${A.best.run}: ${fx(A.best.mean)} µm</td></tr>
+      <tr><td>Best run setting</td><td>${FACTORS.map(f => `${A.best.f[f.key]} ${f.unit}`).join(", ")}</td></tr>
+      <tr><td>Optimum tested in the array</td><td>${optRun ? `Yes, Run ${optRun.run}` : "No"}</td></tr>
+    </tbody>`;
+
+  const sorted = [...A.anova].sort((a, b) => b.pct - a.pct);
+  const top = sorted[0], rest = sorted.slice(1);
+  const dir = FACTORS.map(f => `the ${levelWord(f, A.optSel[f.key])} ${f.name.toLowerCase()} (${withUnit(f, A.optSel[f.key])})`);
+  const gap = A.best.mean - A.optPred.ra;
+
+  $("conclusions").innerHTML = [
+    `${top.f.name} is the dominant factor, accounting for ${fx(top.pct, 2)}% of the variation in mean Ra (F = ${fx(top.F, 1)}).`,
+    `${rest.map((a, i) => `${i ? a.f.name.toLowerCase() : a.f.name} contributes ${fx(a.pct, 2)}%`).join(" and ")}; ${rest.every(a => a.sig) ? "both exceed" : rest.some(a => a.sig) ? "only " + rest.filter(a => a.sig).map(a => a.f.name.toLowerCase()).join(", ") + " exceeds" : "neither exceeds"} the critical F of ${F_CRIT_2_2.toFixed(1)}.`,
+    `Surface roughness is lowest with ${dir[0]}, ${dir[1]} and ${dir[2]}.`,
+    optRun
+      ? `The optimal setting was tested directly as Run ${optRun.run}, giving a mean Ra of ${fx(optRun.mean)} µm against a prediction of ${fx(A.optPred.ra)} µm.`
+      : `The predicted Ra at the optimal setting is ${fx(A.optPred.ra)} µm, ${fx(Math.abs(gap))} µm ${gap >= 0 ? "below" : "above"} the best tested result (Run ${A.best.run}, ${fx(A.best.mean)} µm).`,
+  ].map(t => `<li>${t}</li>`).join("");
+
+  $("limits").innerHTML = [
+    `With three factors in an L9 array only 2 degrees of freedom remain for error, so the F-tests rest on a very small error estimate.`,
+    `Interactions between factors are not estimated; the prediction assumes their effects simply add.`,
+    optRun ? `The optimum lies inside the tested array, so no extra confirmation run is strictly required.`
+           : `The optimal combination is not one of the nine runs. A confirmation trial at that setting is needed before the prediction is quoted as a result.`,
+    esc(sourceNote),
+  ].map(t => `<li>${t}</li>`).join("");
+}
+
+/* ------------------------------------------------------------------ *
+ * Downloads
+ * ------------------------------------------------------------------ */
+function download(name, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+  const a = Object.assign(document.createElement("a"), { href: url, download: name });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const csvs = {
+  raw: () => ["Run,Replicate," + FACTORS.map(f => f.key).join(",") + "," + RESP,
+    ...A.runs.flatMap(r => r.reps.map((v, i) => [r.run, i + 1, ...FACTORS.map(f => r.f[f.key]), v].join(",")))].join("\n"),
+  runs: () => ["Run," + FACTORS.map(f => f.key).join(",") + ",Mean_Ra_um,SD_Ra_um,SN_ratio_dB",
+    ...A.runs.map(r => [r.run, ...FACTORS.map(f => r.f[f.key]), r.mean.toFixed(4), r.sd == null ? "" : r.sd.toFixed(4), r.sn.toFixed(4)].join(","))].join("\n"),
+  anova: () => ["Source,DOF,Sum_Sq,Mean_Sq,F_ratio,Percent_Contribution",
+    ...A.anova.map(a => [`"${a.f.name} (${a.f.sym})"`, a.dof, a.ss.toFixed(5), a.ms.toFixed(5), a.F == null ? "" : a.F.toFixed(3), a.pct.toFixed(2)].join(",")),
+    ["Error", 2, A.err.ss.toFixed(5), A.err.ms.toFixed(5), "", A.err.pct.toFixed(2)].join(","),
+    ["Total", 8, A.ssT.toFixed(5), "", "", "100.00"].join(",")].join("\n"),
+};
+const dlNames = { raw: "wedm_niobium_raw_data.csv", runs: "taguchi_SN_ratio_table.csv", anova: "taguchi_ANOVA_table.csv" };
+document.querySelectorAll("[data-dl]").forEach(b => b.addEventListener("click", () => download(dlNames[b.dataset.dl], csvs[b.dataset.dl]())));
+
+/* ------------------------------------------------------------------ *
+ * Wiring
+ * ------------------------------------------------------------------ */
+function renderAll() {
+  renderFindings(); renderPredictorFields(); renderPrediction();
+  renderDesign(); renderData(); renderEffects(); renderResponse(); renderANOVA(); renderOptimum();
+}
+
+function load(text, note) {
+  A = analyse(parseCSV(text));
+  sel = { ...A.optSel };
+  sourceNote = note;
+  renderAll();
+}
+
+function showAlert(kind, msg) {
+  const el = $("data-alert");
+  el.className = `alert show ${kind}`;
+  el.textContent = msg;
+}
+
+$("file-in").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      load(reader.result, `Uploaded file: ${file.name}, ${parseCSV(reader.result).length} readings.`);
+      showAlert("ok", `Loaded ${file.name}. Every table and chart now reflects this file.`);
+      $("btn-reset-data").hidden = false;
+    } catch (err) {
+      showAlert("err", `${file.name} was not loaded: ${err.message} The current data is unchanged. Expected columns: Run, ${FACTORS.map(f => f.key).join(", ")}, ${RESP}.`);
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+});
+
+$("btn-reset-data").addEventListener("click", () => {
+  load(BUNDLED_CSV, BUNDLED_NOTE);
+  $("btn-reset-data").hidden = true;
+  showAlert("ok", "Restored the representative dataset.");
+});
+
+$("pred-reset").addEventListener("click", () => { sel = { ...A.optSel }; renderPredictorFields(); renderPrediction(); });
+
+document.querySelectorAll(".toggle button").forEach(b => b.addEventListener("click", () => { metric = b.dataset.metric; renderEffects(); }));
+
+// Highlight the section currently in view
+const navLinks = [...document.querySelectorAll(".secnav a")];
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+  });
+}, { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("section.block").forEach(s => spy.observe(s));
+
+load(BUNDLED_CSV, BUNDLED_NOTE);
+</script>
+</body>
+</html>
